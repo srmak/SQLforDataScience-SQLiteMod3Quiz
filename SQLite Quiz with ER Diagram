@@ -1,0 +1,41 @@
+/* 1. How many albums does the artist Led Zepplin have? */
+SELECT count(albumID) as totAlbums
+FROM albums
+WHERE artistID = (
+		SELECT artistID
+		FROM artists
+		WHERE name = 'Led Zeppelin')
+
+/* 2. Create a list of album titles and the unit prices for the artist "Audioslave'  */
+SELECT alb.title, trk.unitprice
+FROM ((albums alb
+       INNER JOIN artists art ON alb.artistID = art.artistID) 
+       INNER JOIN tracks trk ON alb.albumID = trk.albumID)
+WHERE art.name = 'Audioslave'
+
+/* 3. Find the first and last name of any customer who does not have an invoice. Are there any customers returned from the query? */
+-- SOLUTION A 
+SELECT firstName, lastName
+FROM customers
+WHERE customerID = (
+		SELECT customerID
+		FROM invoices
+		WHERE invoiceID = NULL )
+-- SOLUTION B 
+SELECT cust.firstName, cust.lastName, inv.invoiceID
+FROM Customers cust
+LEFT JOIN Invoices inv ON cust.customerID = inv.customerID
+WHERE inv.invoiceID = NULL
+
+/* 4. Find the total price for each album. What is the total price for the album “Big Ones”? */
+SELECT alb.title, sum(trk.unitprice) AS TotPricePerAlbum
+FROM albums alb
+INNER JOIN tracks trk ON alb.albumid = trk.albumid
+GROUP BY alb.title
+HAVING alb.title = 'Big Ones'
+
+/* 5. How many records are created when you apply a Cartesian join to the invoice and invoice items table? */
+SELECT inv.invoiceID, unitPrice, quantity, trackID
+FROM invoices inv CROSS JOIN invoice_items invIt;
+
+---------------- the end ---------------
